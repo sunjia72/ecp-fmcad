@@ -70,10 +70,15 @@ python3 -c "import transformers; transformers.pipeline('text-generation', model=
 
 ### Dataset Preparation
 We have already built the datasets to data/datasets. To rerun how it is built, (including the conversion to answer-construction-format statements and labeling of admissible vocabulary), run 
-`python -m src.preprocess.process_datasets`
+`python -m src.preprocess.process_datasets --data_name matharena` and `python -m src.preprocess.process_datasets --data_name putnam`. 
 
+## Solved Instances
+We show all the solved Putnam (17) and MathArena (18) instances in `Formalization/putnam_solved/*` and `Formalization/matharena_solved/*`. 
 
 ### Demonstration
+
+The demonstration of admissible checker is in `python src.demo.admissibility_dataset_demo`, we select 10 problems from the datasets, each with admissible and inadmissible answers for comparison. 
+
 To run an ECP end-to-end loop on an example with gpt-5.4 for both answer construction and final proof generation, run
 
 ```
@@ -165,7 +170,6 @@ theorem P2026AIMEI_1 : ∃ (P2026AIMEI_1_answer : Nat), ∀ (d p : ℚ),
   · norm_num
 ```
 
-The demonstration of admissible checker is in `python src.demo.admissibility_dataset_demo`, we select 5 problems from the datasets, each with an admissible and inadmissible answer. 
 
 
 ### Experiment Logs
@@ -189,8 +193,7 @@ python -m src.ecp.main --mode ecp --baseline mcp --problem_path putnam --conject
 ```
 
 
-For PutnamBench (346 problems), answer-construction with GPT-5.4 will take around 30 USD (~346 responses). The final proof generation with Goedel-LM/Goedel-Prover-V2-32B under Pass@32 and correction_round = 2 creates around 346 * 32 * 3=33216 responses in total. The estimated compute is around 
-250 H100SXM (80GB, with NVLink) hours or equivalently around 1200 L40S (48GB) hours. 
+For PutnamBench (346 problems), answer-construction with GPT-5.4 will take around 30 USD (~346 responses). The final proof generation with Goedel-LM/Goedel-Prover-V2-32B under Pass@32 and correction_round = 2 creates maximum of 346 * 32 * 3=33216 responses in total. The estimated compute is around 250 hours for H100 (80GB) or equivalently 1200 hours for L40S (48), including around 25 hours for Lean proof compilation with CPUs. 
 
 
 Other setups (where `problem_path in ['putnam', 'matharena']`, `prover_model in ['Goedel-LM/Goedel-Prover-V2-8B', 'Goedel-LM/Goedel-Prover-V2-32B']`, `baseline in ['mcp', 'cot']`) can be executed by changing the `problem_path/prover_model/baseline` in the above command. 
@@ -201,7 +204,7 @@ For baseline commercial LLM's end-to-end proof generation, run
 python -m src.ecp.main --mode llm_baseline  --problem_path putnam --prover_model GPT-5.4 --pass_at_n 4 --correction_rounds 2
 python -m src.ecp.main --mode llm_baseline  --problem_path matharena --prover_model GPT-5.4 --pass_at_n 32 --correction_rounds 2
 ```
-This will cost around 180 + 340 = 520 USD OpenAI API. 
+This will cost around 180 (putnam, pass@4) + 340 (matharena, pass@32) = 520 USD OpenAI API. Using putnam with pass@32 will cost around 180*(32/4)=1440 USD API.
 
 ### Acknowledgement
 Part of the repository (`SandboxFusion` and `src/goedel`) is built upon existing works, including Sandbox Fusion [1] (https://github.com/bytedance/SandboxFusion.git) and Goedel-Prover-V2 [2] (https://github.com/Goedel-LM/Goedel-Prover-V2). 
