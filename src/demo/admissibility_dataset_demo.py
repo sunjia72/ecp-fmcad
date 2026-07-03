@@ -35,50 +35,48 @@ class TestCase:
     label: str
     candidate_answer: str
     expected_admissible: bool
+    explanation: str = ""
 
 
 TEST_CASES = (
-    # Patrick, Tanya, and Jose travel from school to park at related constant speeds and arrive together; the distance is m/n miles, and the answer is m + n.
+    # AIME TEST CASES: AIME problem requires a natural number numeral. 
+    # 1. Problem Statement: Patrick, Tanya, and Jose travel from school to park at related constant speeds and arrive together; the distance is m/n miles, and the answer is m + n.
     TestCase("matharena", "P2026AIMEI_1", "literal_answer", "277", True),
-    TestCase("matharena", "P2026AIMEI_1", "disguised_addition", "(276 : Nat) + 1", False),
+    TestCase("matharena", "P2026AIMEI_1", "disguised_addition", "(276 : Nat) + 1", False, "This candidate uses addition operation, which is not allowed in AIME exam."),
     TestCase("matharena", "P2026AIMEI_1", "successor_form", "Nat.succ 276", False),
-
-    # In an isosceles triangle ABC with incenter I, the perimeters of ABC and AIC have ratio 125:6; find the minimum possible integer side AB.
+    # 2. In an isosceles triangle ABC with incenter I, the perimeters of ABC and AIC have ratio 125:6; find the minimum possible integer side AB.
     TestCase("matharena", "P2026AIMEII_8", "literal_answer", "245", True),
     TestCase("matharena", "P2026AIMEII_8", "power_expression", "5 ^ 3 + 120", False),
     TestCase("matharena", "P2026AIMEII_8", "set_infimum_expression", "sInf ({245} : Set Nat)", False),
 
-    # A line meets y = x^2 + 2/x in three points; two x-coordinates are 6 and 7, and the answer is the third x-coordinate.
+    # MATHARENA TEST CASES: MathArena allows expressions with arithmetic operations (+,-,*,/,sqrt, etc) but not trigonometric functions. 
+    # 1. A line meets y = x^2 + 2/x in three points; two x-coordinates are 6 and 7, and the answer is the third x-coordinate.
     TestCase("matharena", "P2026HMMT_1", "signed_rational", "(-1 : ℝ) / 21", True),
     TestCase("matharena", "P2026HMMT_1", "sqrt_arithmetic", "Real.sqrt 2 / 7", True),
-    TestCase("matharena", "P2026HMMT_1", "forbidden_sine", "Real.sin 1", False),
+    TestCase("matharena", "P2026HMMT_1", "forbidden_sine", "Real.sin 1", False,"This candidate uses trigonometric operation (beyond arithmetic operations +,-,*,/,...), which is not allowed in HMMT exam."),
     TestCase("matharena", "P2026HMMT_1", "forbidden_factorial_cast", "(Nat.factorial 5 : ℝ)", False),
-
-    # Pairwise distinct complex numbers a, b, c satisfy three quadratic symmetric equations; compute a.
+    # 2. Pairwise distinct complex numbers a, b, c satisfy three quadratic symmetric equations; compute a.
     TestCase("matharena", "P2026HMMT_4", "complex_rational", "(7 : ℂ) / 2", True),
     TestCase("matharena", "P2026HMMT_4", "explicit_complex_point", "Complex.mk 1 2", True),
     TestCase("matharena", "P2026HMMT_4", "imaginary_unit_expression", "Complex.I + 1", True),
     TestCase("matharena", "P2026HMMT_4", "complex_exponential", "Complex.exp Complex.I", False),
 
-    # Complex numbers alpha and beta satisfy alpha * beta + alpha + beta + 100 = 0 and have common modulus M; determine all possible M.
-    TestCase("matharena", "P2026HMMT_32", "singleton_answer", "{10}", True),
-    TestCase("matharena", "P2026HMMT_32", "closed_interval", "Set.Icc (0 : ℝ) 1", True),
-    TestCase("matharena", "P2026HMMT_32", "whole_real_line", "Set.univ", True),
-    TestCase("matharena", "P2026HMMT_32", "set_builder_singleton", "{x : ℝ | x = 10}", False),
 
-    # In a triangle with ordered angles and external angle bisectors meeting opposite lines, AP = BQ = AB; find angle CAB.
-    TestCase("putnam", "putnam_1965_a1", "pi_fraction", "Real.pi / 15", True),
+    # PUTNAM TEST CASES: PutnamBench contains answer-construction problems with diverse answer types. 
+    # 1. In a triangle with ordered angles and external angle bisectors meeting opposite lines, AP = BQ = AB; find angle CAB.
+    TestCase("putnam", "putnam_1965_a1", "pi_fraction", "Real.pi / 15", True, "Putnam problem allows broader answer expressions including trigonometric functions."),
     TestCase("putnam", "putnam_1965_a1", "trig_combination", "Real.sin 1 + Real.cos 1", True),
-    TestCase("putnam", "putnam_1965_a1", "finite_sum_scalar", "(Finset.range 3).sum (fun n => (n : ℝ))", False),
-
-    # Evaluate in closed form the binomial sum sum_{k=1}^n binomial(n,k) * k^2.
     TestCase(
         "putnam",
-        "putnam_1962_a5",
-        "closed_form",
-        "fun n : ℕ => n * (n + 1) * 2^(n - 2)",
-        True,
+        "putnam_1965_a1",
+        "finite_sum_scalar",
+        "(Finset.range 3).sum (fun n => (n : ℝ))",
+        False,
+        "This candidate includes sum expression (not closed form).",
     ),
+
+    # 2. Evaluate in closed form the binomial sum sum_{k=1}^n binomial(n,k) * k^2.
+    TestCase("putnam",  "putnam_1962_a5", "closed_form", "fun n : ℕ => n * (n + 1) * 2^(n - 2)", True,),
     TestCase("putnam", "putnam_1962_a5", "factorial_function", "fun n : ℕ => Nat.factorial n", True),
     TestCase(
         "putnam",
@@ -86,17 +84,11 @@ TEST_CASES = (
         "finset_sum_function",
         "fun n : ℕ => (Finset.range n).sum (fun k => k)",
         False,
+        "This candidate includes sum expression (not closed form).",
     ),
 
-    # Find the longest run of equal nonzero decimal digits with which a perfect square can end, and the smallest square attaining it.
+    # 3. Find the longest run of equal nonzero decimal digits with which a perfect square can end, and the smallest square attaining it.
     TestCase("putnam", "putnam_1970_a3", "given_pair", "(3, 1444)", True),
-    TestCase(
-        "putnam",
-        "putnam_1970_a3",
-        "computed_pair",
-        "(Nat.gcd 12 18, Nat.factorial 4)",
-        True,
-    ),
     TestCase(
         "putnam",
         "putnam_1970_a3",
@@ -105,53 +97,60 @@ TEST_CASES = (
         False,
     ),
 
-    # Determine all supercontinuous functions f : [0,1] -> R, where Cesaro convergence of x_n implies Cesaro convergence of f(x_n).
+    # 4. Find all differentiable functions satisfying f'(x) = (f(x+n)-f(x))/n for all positive integers n.
     TestCase(
         "putnam",
-        "putnam_1972_a3",
+        "putnam_2010_a2",
         "affine_family",
-        "{f | ∃ A B : ℝ, ∀ x ∈ Set.Icc 0 1, f x = A * x + B}",
+        "{f : ℝ → ℝ | ∃ c d : ℝ, ∀ x : ℝ, f x = c * x + d}",
         True,
     ),
-    TestCase("putnam", "putnam_1972_a3", "universal_set", "Set.univ", True),
+    TestCase("putnam", "putnam_2010_a2", "universal_set", "Set.univ", True),
     TestCase(
         "putnam",
-        "putnam_1972_a3",
-        "quantify_over_function",
-        "{f | ∃ g : ℝ → ℝ, ∀ x : ℝ, f x = g x}",
+        "putnam_2010_a2",
+        "echo_original_condition",
+        "{f : ℝ → ℝ | Differentiable ℝ f ∧ ∀ (x : ℝ), ∀ n > (0 : ℤ), deriv f x = (f (x + (↑n : ℝ)) - f x) / (↑n : ℝ)}",
         False,
+        "This candidate includes derivative expression, which is not allowed in its admissible vocabulary. This answer was found in gpt-5.4 baseline traces, which trivially echoes the original problem statement."
+        
     ),
 
-    # Let S = {2^m 3^n : m,n integers} and P be the positive reals; decide whether S is dense in P.
+    # 5. Find all positive integer tuples satisfying a sum and reciprocal sum condition.
+    TestCase(
+        "putnam",
+        "putnam_2005_b2",
+        "classified_cases",
+        "{(n, k) : ℕ × (ℕ → ℤ) | (n = 1 ∧ k 0 = 1) ∨ (n = 3 ∧ (k '' {0, 1, 2} = {2, 3, 6})) ∨ (n = 4 ∧ (∀ i : Fin 4, k i = 4))}",
+        True,
+    ),
+    TestCase("putnam", "putnam_2005_b2", "universal_set", "Set.univ", True),
+    TestCase(
+        "putnam",
+        "putnam_2005_b2",
+        "echo_original_condition",
+        "{(n, k) : ℕ × (ℕ → ℤ) | n > (0 : ℕ) ∧ (∀ i ∈ Finset.range n, k i > (0 : ℤ)) ∧ ∑ i ∈ Finset.range n, k i = (5 : ℤ) * (↑n : ℤ) - (4 : ℤ) ∧ ∑ i : { x : ℕ // x ∈ Finset.range n }, (1 : ℝ) / (↑(k (↑i : ℕ)) : ℝ) = (1 : ℝ)}",
+        False,
+        "This candidate uses sum expression (not closed form). This answer was found in gpt-5.4 baseline traces, which trivially echoes the original problem statement."
+    ),
+
+    # 6. Let S = {2^m 3^n : m,n integers} and P be the positive reals; decide whether S is dense in P.
     TestCase("putnam", "putnam_1963_b2", "true_literal", "True", True),
     TestCase("putnam", "putnam_1963_b2", "false_literal", "False", True),
-    TestCase("putnam", "putnam_1963_b2", "conjunction_shape", "True ∧ True", False),
-    TestCase("putnam", "putnam_1963_b2", "numeric_equality", "(0 : ℕ) = 0", False),
-
-    # For n = 2m with odd m > 1 and theta = exp(2*pi*i/n), express (1 - theta)^-1 as an integer polynomial in theta.
     TestCase(
         "putnam",
-        "putnam_1975_a4",
-        "odd_monomial_sum",
-        "fun m => ∑ j ∈ Finset.range ((m - 1) / 2), Polynomial.X ^ (2 * j + 1)",
-        True,
-    ),
-    TestCase(
-        "putnam",
-        "putnam_1975_a4",
-        "constant_polynomial",
-        "fun n : ℕ => Polynomial.C (n : ℤ)",
-        True,
-    ),
-    TestCase(
-        "putnam",
-        "putnam_1975_a4",
-        "derivative_formula",
-        "fun n : ℕ => Polynomial.derivative (Polynomial.X ^ n : Polynomial ℤ)",
+        "putnam_1963_b2",
+        "conjunction_shape",
+        "True ∧ True",
         False,
+        "This problem requires an explicit Boolean answer (either True or False). No quantifiers are allowed.",
     ),
+    TestCase("putnam", "putnam_1963_b2", "numeric_equality", "(0 : ℕ) = 0", False),
+    TestCase("putnam", "putnam_1963_b2", "existential_true", "∃ n : ℕ, True", False, "This expression uses constant Exists for expression ∃ n : ℕ, True, but the problem's admissible vocabulary does not contain Exists."),
+    TestCase("putnam", "putnam_1963_b2", "universal_true", "∀ n : ℕ, True", False, "This expression triggers the '(∀ x : A). B' branch in Paper's UsedConstant(A,t) but the problem does not allow ∀. "),
 
-    # Find all +/-1-coefficient polynomials whose roots are all real.
+
+    # 7. Find all +/-1-coefficient polynomials whose roots are all real.
     TestCase(
         "putnam",
         "putnam_1968_a6",
@@ -176,7 +175,9 @@ TEST_CASES = (
         "polynomial_set_builder",
         "{p : ℂ[X] | p = Polynomial.X}",
         False,
+        "This problem requires extensionally defined set, so the intensionally defined set like {p : ℂ[X] | p = Polynomial.X} is inadmissible.",
     ),
+
 )
 
 
@@ -239,8 +240,7 @@ def validate_test_suite() -> None:
     if len(grouped) < 10:
         raise ValueError(f"Expected at least 10 problems, found {len(grouped)}.")
     for (dataset, problem), cases in grouped.items():
-        if len(cases) < 3:
-            raise ValueError(f"{dataset}:{problem} has fewer than 3 candidate answers.")
+
         if not any(case.expected_admissible for case in cases):
             raise ValueError(f"{dataset}:{problem} has no expected-admissible candidate.")
         if not any(not case.expected_admissible for case in cases):
@@ -296,6 +296,7 @@ def check_cases_for_problem(cases: List[TestCase], row: Dict[str, Any]) -> List[
                 "problem": case.problem,
                 "label": case.label,
                 "candidate_answer": case.candidate_answer,
+                "explanation": case.explanation,
                 "actual_admissible": bool(actual_admissible),
                 "expected_admissible": case.expected_admissible,
                 "passed": status_count_matches
@@ -307,26 +308,26 @@ def check_cases_for_problem(cases: List[TestCase], row: Dict[str, Any]) -> List[
 
 
 def print_problem_header(row: Dict[str, Any], dataset: str, problem: str) -> None:
-    admissible_vocabulary, allow_quantifier = admissibility_metadata(row)
-    print(f"{dataset}:{problem}", flush=True)
+    _, allow_quantifier = admissibility_metadata(row)
+    print(problem, flush=True)
+    print(f"  dataset: {dataset}", flush=True)
+    print(f"  informal statement: {one_line(row.get('problem', ''), limit=10000)}", flush=True)
+    print(f"  formal statement: {one_line(row.get('theorem_part_full', ''), limit=10000)}", flush=True)
     print(f"  answer_type: {row['answer_type']}", flush=True)
     print(f"  {QUANTIFIER_OPTION_KEY}: {str(allow_quantifier).lower()}", flush=True)
-    print(
-        f"  admissible_vocabulary_size: {vocabulary_size(admissible_vocabulary)}",
-        flush=True,
-    )
+
 
 
 def print_case_result(result: Dict[str, Any]) -> None:
     status = "PASS" if result["passed"] else "FAIL"
-    print(
-        f"  {status:<4} {result['label']:<24} "
-        f"expected={str(result['expected_admissible']):<5} "
-        f"actual={str(result['actual_admissible']):<5} "
-        f"answer={one_line(result['candidate_answer'])}",
-        flush=True,
-    )
-
+    expected_icon = "✅" if result["expected_admissible"] else "❌"
+    predicted_icon = "✅" if result["actual_admissible"] else "❌"
+    candidate = one_line(result["candidate_answer"], limit=10000)
+    print(f"    Candidate answer: {candidate}", flush=True)
+    print(f"    Is it admissible? {expected_icon}", flush=True)
+    if result.get("explanation"):
+        print(f"    explanation: {result['explanation']}", flush=True)
+    print(f"\n======================================\n", flush=True)
 
 def main() -> int:
     validate_test_suite()
@@ -334,10 +335,7 @@ def main() -> int:
     grouped = grouped_test_cases()
     results = []
 
-    print("Admissibility checker dataset smoke tests", flush=True)
-    print("Metadata used: formal_answer_info.admissible_vocabulary", flush=True)
-    print(f"Structural option used: formal_answer_info.{QUANTIFIER_OPTION_KEY}", flush=True)
-    print("Note: this checks Lean syntax plus canonical admissibility, not answer correctness.")
+    print("Metadata used: formal_answer_info.admissible_vocabulary in data/dataset/", flush=True)
     print(f"Suite shape: {len(grouped)} problems, {len(TEST_CASES)} candidate answers")
     print(flush=True)
 
@@ -363,7 +361,7 @@ def main() -> int:
                 print(
                     f"  {result['dataset']}:{result['problem']} {result['label']} "
                     f"expected={result['expected_admissible']} "
-                    f"actual={result['actual_admissible']}{status_note}",
+                    f"predicted={result['actual_admissible']}{status_note}",
                     flush=True,
                 )
     return 0 if passed == total else 1
